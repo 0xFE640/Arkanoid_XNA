@@ -1,13 +1,9 @@
 ﻿#region Using Statements
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Storage;
-using Microsoft.Xna.Framework.GamerServices;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 
@@ -29,11 +25,13 @@ namespace Arkanoid
 
         private bool space_pressed;
 
+
+
         enum Directions {Left,Right,Up,Down,LeftDown,LeftUp,RightDown,RightUp,Null }
         
         Directions direction;
-        readonly private int ball_velocity=5;
-        readonly private int stick_velocity = 3;
+        readonly private int ball_velocity=4;
+        readonly private int stick_velocity = 5;
 
         public Game1()
 
@@ -61,8 +59,7 @@ namespace Arkanoid
             spriteBatch = new SpriteBatch(GraphicsDevice);
             ballTexture2D = Content.Load<Texture2D>(@"ball");
             stickTexture2D = Content.Load<Texture2D>(@"stick");
-
-
+            
         }
 
       
@@ -75,6 +72,10 @@ namespace Arkanoid
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+            if (GamePad.GetState(PlayerIndex.One).DPad.Right == ButtonState.Pressed && stick.X + stickTexture2D.Width <= Window.ClientBounds.Width)
+                stick.X += stick_velocity;
+            if (GamePad.GetState(PlayerIndex.One).DPad.Left == ButtonState.Pressed && stick.X >= 0)
+                stick.X -= stick_velocity;
 
             if (Keyboard.GetState().IsKeyDown(Keys.Right) && stick.X+stickTexture2D.Width<= Window.ClientBounds.Width)
                 stick.X += stick_velocity;
@@ -86,18 +87,6 @@ namespace Arkanoid
          //7   stick.X = Mouse.GetState().X;
             switch (direction)
             {
-                //case Directions.Left:
-                //    ball.X -= velocity;
-                //    break;
-                //case Directions.Right:
-                //    ball.X += velocity;
-                //    break;
-                //case Directions.Down:
-                //    ball.Y += velocity;
-                //    break;
-                //case Directions.Up:
-                //    ball.Y -= velocity;
-                //    break;
                 case Directions.LeftDown:
                     ball.X -= ball_velocity;
                     ball.Y += ball_velocity;
@@ -115,32 +104,31 @@ namespace Arkanoid
                     ball.Y -= ball_velocity;
                     break;
                 case Directions.Null:
-               //     ballTexture2D.Dispose();
+                    MessageBox.Show("Game Over");
+                    Application.Exit();
 
                     break;
 
 
             }
-
             
-            
-            if (ball.X == Window.ClientBounds.Width - ballTexture2D.Width  && direction == Directions.RightDown )
+            if (ball.X >= Window.ClientBounds.Width - ballTexture2D.Width  && direction == Directions.RightDown )
                     direction = Directions.LeftDown;
-            if (ball.X == Window.ClientBounds.Width - ballTexture2D.Width && direction == Directions.RightUp)
+            if (ball.X >= Window.ClientBounds.Width - ballTexture2D.Width && direction == Directions.RightUp)
                 direction = Directions.LeftUp;
-            if (ball.Y == Window.ClientBounds.Height - ballTexture2D.Height && direction == Directions.RightDown)
+            if (ball.Y >= Window.ClientBounds.Height - ballTexture2D.Height && direction == Directions.RightDown)
                 //direction = Directions.RightUp;
                 direction = Directions.Null;
-            if (ball.Y == Window.ClientBounds.Height - ballTexture2D.Height && direction == Directions.LeftDown)
+            if (ball.Y >= Window.ClientBounds.Height - ballTexture2D.Height && direction == Directions.LeftDown)
                 //direction = Directions.LeftUp;
                 direction = Directions.Null;
-            if (ball.X == 0 && direction == Directions.LeftDown)
+            if (ball.X <=  0 && direction == Directions.LeftDown)
                 direction = Directions.RightDown;
-            if (ball.X == 0 && direction == Directions.LeftUp)
+            if (ball.X <=  0 && direction == Directions.LeftUp)
                 direction = Directions.RightUp;
-            if (ball.Y == 0 && direction == Directions.LeftUp)
+            if (ball.Y <=  0  && direction == Directions.LeftUp)
                 direction = Directions.LeftDown;
-            if (ball.Y == 0 && direction == Directions.RightUp)
+            if (ball.Y <=  0  && direction == Directions.RightUp)
                 direction = Directions.RightDown;
 
             
